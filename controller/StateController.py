@@ -9,8 +9,7 @@ class States(Resource):
 
 class State(Resource):
     def get(self, stateAb):
-        info = service.getState(stateAb)
-        return info
+        return service.getState(stateAb)
 
 
 api.add_resource(States, f"{BASE_URL}/states")

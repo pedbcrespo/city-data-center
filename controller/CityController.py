@@ -19,12 +19,11 @@ class RedirectToCities(Resource):
 
 class Cities(Resource):
     def get(self):
-        return cityService.getAllCities()
+        return cityService.getCities()
 
 class City(Resource):
     def get(self, city_id):
-        info = infoService.getCityInfo(city_id)
-        return info
+        return cityService.getCity(city_id)
 
     
     

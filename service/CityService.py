@@ -8,6 +8,6 @@ class CityService:
         cities = City.query.all()
         return [city.json() for city in cities]
 
-    def getCityById(self, cityId:int):
+    def getCity(self, cityId:int):
         city = City.query.filter(City.id == cityId).first()
         return city.json()
