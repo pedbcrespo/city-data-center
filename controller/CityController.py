@@ -1,7 +1,6 @@
 from flask_restful import Resource
 from flask import redirect, request, render_template, make_response
-from configuration.config import api
-from configuration.dev_configuration import BASE_URL
+from configuration.config import api, BASE_URL
 from service.CityService import CityService
 from service.InfoService import InfoService
 from service.StateService import StateService
