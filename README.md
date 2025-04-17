@@ -9,5 +9,17 @@
 *   Python
 *   Flask
 *   MySQL
+*   Docker
+*   Docker compose
 
 Os dados são coletados de um google forms, tratados e enviados para o banco de dados.
+
+## Para rodar o codigo na primeira vez:
+```bash
+docker compose up --build
+```
+
+## Caso ja tenha feito o build
+```bash
+docker compose up
+```
