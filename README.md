@@ -23,3 +23,26 @@ docker compose up --build
 ```bash
 docker compose up
 ```
+
+## Para rodar o projeto sem ser pelo Docker
+*   Primeiro crie um ambiente virtual
+```bash
+python -m venv venv
+```
+*   Ative o ambiente virtual (Windows):
+```bash
+./venv/scripts/activate
+```   
+*   Linux:
+```bash
+./venv/bin/activate
+``` 
+*   Instale os recursos listados no requirements.txt
+```bash
+pip install -r requirements.txt
+```
+*   Após a instalação, ative o myslq que DEVE estar instalado no computador e importe a base de dados
+*   Após isso, rode o projeto
+```bash
+python main.py
+```
