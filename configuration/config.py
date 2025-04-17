@@ -9,7 +9,7 @@ SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{os.getenv('DB_USER')}:{os.getenv('D
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 BASE_URL = '/city-db-api'
 
-app = Flask('__name__')
+app = Flask(__name__)
 CORS(app, origins='*')
 app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 

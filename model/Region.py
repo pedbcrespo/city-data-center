@@ -1,8 +1,8 @@
-from configuration.config import ormDatabase
-
-class Region(ormDatabase.Model):
-    id = ormDatabase.Column(ormDatabase.Integer, primary_key=True)
-    name = ormDatabase.Column(ormDatabase.String(45))
+from configuration.config import ormDatabase as orm
+ 
+class Region(orm.Model):
+    id = orm.Column(orm.Integer, primary_key=True)
+    name = orm.Column(orm.String(45))
     
     def __init__(self, name):
         self.name = name

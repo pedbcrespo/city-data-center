@@ -1,11 +1,9 @@
-from configuration.config import ormDatabase
-from model.District import District
-orm = ormDatabase
+from configuration.config import ormDatabase as orm
 
 class Street(orm.Model):
     id = orm.Column(orm.Integer, primary_key=True)
     name = orm.Column(orm.String(200))
-    district_id = ormDatabase.Column(ormDatabase.Integer, ormDatabase.ForeignKey('district.id'))
+    district_id = orm.Column(orm.Integer, orm.ForeignKey('district.id'))
     
     def __init__(self, name, district_id):
         self.name = name

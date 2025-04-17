@@ -1,6 +1,4 @@
-from configuration.config import ormDatabase
-
-orm = ormDatabase
+from configuration.config import ormDatabase as orm
 
 class Demand(orm.Model):
     id = orm.Column(orm.Integer, primary_key=True)

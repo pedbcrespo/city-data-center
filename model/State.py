@@ -1,11 +1,11 @@
-from configuration.config import ormDatabase
+from configuration.config import ormDatabase as orm
 
-class State(ormDatabase.Model):
-    id = ormDatabase.Column(ormDatabase.Integer, primary_key=True)
-    ibge_id = ormDatabase.Column(ormDatabase.Integer) 
-    name = ormDatabase.Column(ormDatabase.String(100))
-    abbreviation = ormDatabase.Column(ormDatabase.String(2))
-    region_id = ormDatabase.Column(ormDatabase.Integer, ormDatabase.ForeignKey('region.id'))
+class State(orm.Model):
+    id = orm.Column(orm.Integer, primary_key=True)
+    ibge_id = orm.Column(orm.Integer) 
+    name = orm.Column(orm.String(100))
+    abbreviation = orm.Column(orm.String(2))
+    region_id = orm.Column(orm.Integer, orm.ForeignKey('region.id'))
     
     def __init__(self, name, abbreviation, region_id):
         self.name = name
