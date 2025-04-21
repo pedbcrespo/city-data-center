@@ -1,9 +1,12 @@
-from model.Demand import Demand
-from model.City import City
 from model.DemandLocation import DemandLocation
-from configuration.config import ormDatabase
+from configuration.config import mongo
+from flask import jsonify
 
 class DemandService:
     def getAll(self):
-        pass
+        results = list(mongo.db.get_collection('demand_location').find())
+        return jsonify(results)
     
+    def save(self, demand: str, location: DemandLocation): 
+        mongo.db.get_collection('demand_location').insert_one(demand.json())
+        return True
