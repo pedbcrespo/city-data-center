@@ -1,5 +1,5 @@
-from model.DemandLocation import DemandLocation
-from model.Demand import Demand
+from model.demands.DemandLocation import DemandLocation
+from model.demands.Demand import Demand
 from model.Street import Street
 from model.District import District
 from model.City import City
@@ -15,12 +15,15 @@ class DemandService:
     
     def save(self, demand: DemandLocation):
         registerDemand = Demand.query.filter(Demand.name == demand.demand).first()
-        
+        street = self.__getStreet__(demand)
+
         if not registerDemand:
             orm.session.add(Demand(demand.demand, demand.description))
             orm.session.commit()
         
-        demand.completeInfo()
+        streetId = None if not street else street.id
+
+        demand.completeInfo(streetId, registerDemand.id)
         mongo.db.get_collection('demand_location').insert_one(demand.json())
         return demand
     
@@ -29,15 +32,16 @@ class DemandService:
         district_alias = aliased(District)
         city_alias = aliased(City)
         state_alias = aliased(State)
-
-        result = (orm.session.query(Street)
-        .join(district_alias, Street.district_id == district_alias.id)
-        .join(city_alias, district_alias.city_id == city_alias.id)
-        .join(state_alias, city_alias.state_id == state_alias.id)
-        .filter(Street.name == demand.street)
-        .filter(district_alias.name == demand.district)
-        .filter(city_alias.name == demand.city)
-        .filter(state_alias.name == demand.state)
-        .one())
-
-        return result
+        try:
+            result = (orm.session.query(Street)
+            .join(district_alias, Street.district_id == district_alias.id)
+            .join(city_alias, district_alias.city_id == city_alias.id)
+            .join(state_alias, city_alias.state_id == state_alias.id)
+            .filter(Street.name == demand.street)
+            .filter(district_alias.name == demand.district)
+            .filter(city_alias.name == demand.city)
+            .filter(state_alias.name == demand.state)
+            .one())
+            return result
+        except:
+            return None
