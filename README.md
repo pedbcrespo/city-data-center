@@ -14,12 +14,13 @@ Aqui encontramos um projeto open source que visa coletar informações das cidad
 
 Os dados são coletados de um google forms, tratados e enviados para o banco de dados.
 
-## Para rodar o codigo na primeira vez:
+## Rodando o codigo usando Docker
+### Para rodar o codigo na primeira vez:
 ```bash
 docker compose up --build
 ```
 
-## Caso ja tenha feito o build
+### Caso ja tenha feito o build
 ```bash
 docker compose up
 ```
@@ -33,7 +34,7 @@ python -m venv venv
 ```bash
 ./venv/scripts/activate
 ```   
-*   Linux:
+*   Ative o ambiente virtual (Linux):
 ```bash
 ./venv/bin/activate
 ``` 
@@ -43,6 +44,7 @@ pip install -r requirements.txt
 ```
 *   Após a instalação, ative o myslq que DEVE estar instalado no computador e importe a base de dados
 *   Após isso, rode o projeto
+* IMPORTANTE: antes de Executar, crie uma conexao nova com os dados no dev_configuration.py **ISSO É TEMPORARIO E TEM QUE SER TRATADO**
 ```bash
-python main.py
+python main.py --dev
 ```
