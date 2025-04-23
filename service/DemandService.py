@@ -13,6 +13,12 @@ class DemandService:
         results = list(mongo.db.get_collection('demand_location').find())
         return jsonify(results)
     
+    def getByCity(self, cityId:int):
+        districts = list(District.query.filter(District.city_id == cityId))
+        streets = list(Street.query.filter(Street.district_id in [district.id for district in districts]))
+        results = list(mongo.db.get_collection('demand_location').find({"streetId": { "$in": [street.id for street in streets] }})) 
+        return jsonify(results)
+    
     def save(self, demand: DemandLocation):
         registerDemand = Demand.query.filter(Demand.name == demand.demand).first()
         street = self.__getStreet__(demand)
