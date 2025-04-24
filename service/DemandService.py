@@ -5,8 +5,16 @@ from model.District import District
 from model.City import City
 from model.State import State
 from sqlalchemy.orm import aliased
+from sqlalchemy import and_
 from configuration.config import mongo, ormDatabase as orm
 from flask import jsonify
+from StreetService import StreetService
+from DistrictService import DistrictService
+
+import requests
+
+streetService = StreetService()
+districtService = DistrictService()
 
 class DemandService:
     def getAll(self):
@@ -18,23 +26,38 @@ class DemandService:
         streets = list(Street.query.filter(Street.district_id in [district.id for district in districts]))
         results = list(mongo.db.get_collection('demand_location').find({"streetId": { "$in": [street.id for street in streets] }})) 
         return jsonify(results)
-    
-    def save(self, demand: DemandLocation):
-        registerDemand = Demand.query.filter(Demand.name == demand.demand).first()
-        street = self.__getStreet__(demand)
 
-        if not registerDemand:
-            orm.session.add(Demand(demand.demand, demand.description))
-            orm.session.commit()
-        
-        streetId = None if not street else street.id
+    def save(self, demandLocation: DemandLocation): 
+        getInfoByCepUrl = f"https://viacep.com.br/ws/{demandLocation.cep}/json/"
+        try:
+            response = requests.get(getInfoByCepUrl)
+            data = response.json()
+            streetName = data['logradouro']
+            districtName = data['bairro']
+            cityName = data['localidade']
+            stateName = data['estado']
 
-        demand.completeInfo(streetId, registerDemand.id)
-        mongo.db.get_collection('demand_location').insert_one(demand.json())
-        return demand
-    
+            street = self.__getStreet__(streetName, districtName, cityName, stateName)
 
-    def __getStreet__(self, demand: DemandLocation):
+            demand = Demand.query.filter(and_(Demand.name == demandLocation.demand, Demand.description == demandLocation.description)).first()
+
+            if not demand:
+                demand = Demand(demandLocation.demand, demandLocation.description)
+                orm.session.add(demand)
+                orm.session.commit()
+                demand = Demand.query.filter(and_(Demand.name == demandLocation.demand, Demand.description == demandLocation.description))
+
+            if not street:
+                street = self.__saveAddress__(streetName, districtName, cityName, stateName)
+            
+            demandLocation.completeInfo(street.id, demand.id)
+            mongo.db.get_collection('demand_location').insert_one(demandLocation.json())
+            return demandLocation.get()
+
+        except:
+            print("ERRO")
+
+    def __getStreet__(self, streetName: str, districtName: str, cityName:str, stateName:str):
         district_alias = aliased(District)
         city_alias = aliased(City)
         state_alias = aliased(State)
@@ -43,11 +66,23 @@ class DemandService:
             .join(district_alias, Street.district_id == district_alias.id)
             .join(city_alias, district_alias.city_id == city_alias.id)
             .join(state_alias, city_alias.state_id == state_alias.id)
-            .filter(Street.name == demand.street)
-            .filter(district_alias.name == demand.district)
-            .filter(city_alias.name == demand.city)
-            .filter(state_alias.name == demand.state)
+            .filter(Street.name == streetName)
+            .filter(district_alias.name == districtName)
+            .filter(city_alias.name == cityName)
+            .filter(state_alias.name == stateName)
             .one())
             return result
         except:
             return None
+        
+    def __saveAddress__(self, streetName, districtName, cityName, stateName):
+        state = State.query.filter(State.name == stateName).first()
+        if not state:
+            return None
+        city = City.query.filter(and_(
+            City.name == cityName,
+            City.state_id == state.id
+        )
+        ).first()
+        district = districtService.save(districtName, city.id)
+        return streetService.save(streetName, district.id)

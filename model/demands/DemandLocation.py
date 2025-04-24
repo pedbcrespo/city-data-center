@@ -2,11 +2,8 @@ from configuration.config import ormDatabase as orm
 from datetime import datetime
 
 class DemandLocation:
-    def __init__(self, state: str, city: str, district: str, street: str, demand: str, description: str, observation: str = None):
-        self.state = state
-        self.city = city
-        self.district = district
-        self.street = street
+    def __init__(self, demand: str, description: str, observation: str, cep:str):
+        self.cep = cep.replace('-', '')
         self.demand = demand
         self.description = description
         self.observation = observation
@@ -18,11 +15,8 @@ class DemandLocation:
 
     def get(self):
         return {
-            'state': self.state,
-            'city': self.city,
-            'district': self.district,
-            'street': self.street,
             'demand': self.demand,
+            'cep': self.cep,
             'observation': self.observation,
             'createDate': self.createDate
         }

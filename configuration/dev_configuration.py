@@ -10,3 +10,6 @@ database='tcc_project'
 mongoHost = 'localhost'
 mongoPort = '27017'
 mongoDB = 'city_database'
+
+#DEEP SEEK
+DEEP_SEEK_API_KEY = 'sk-1a10d14446ed4283bcbc657682da101d'
