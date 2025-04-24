@@ -12,5 +12,4 @@ class State(Resource):
         return service.getState(stateAb)
 
 
-api.add_resource(States, f"{BASE_URL}/states")
-api.add_resource(State, f"{BASE_URL}/state/<uf>")
+

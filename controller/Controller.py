@@ -1,0 +1,23 @@
+from flask_restful import Resource
+from flask import redirect, render_template, make_response
+from configuration.config import api, BASE_URL
+from CityController import Cities, City
+from StateController import States, State
+from DemandController import Demand
+
+class Initial(Resource):
+    def get(self):
+        return make_response(render_template('index.html'))
+
+class RedirectToCities(Resource):
+    def get(self):
+        return redirect(BASE_URL)
+
+
+api.add_resource(RedirectToCities, "/")
+api.add_resource(Initial, BASE_URL)
+api.add_resource(Cities, f"{BASE_URL}/cities")
+api.add_resource(City, f"{BASE_URL}/city/info/<int:city_id>")
+api.add_resource(States, f"{BASE_URL}/states")
+api.add_resource(State, f"{BASE_URL}/state/<uf>")
+api.add_resource(Demand, f"{BASE_URL}/demand/")
