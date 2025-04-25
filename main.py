@@ -1,11 +1,12 @@
 from flask import Flask
+from flask_migrate import Migrate
 from configuration.config import app, ormDatabase as orm
 from controller.Controller import *
 from configuration.args import args
 
+
+migrate = Migrate(app, orm)
 if __name__ == '__main__':
-    with app.app_context():
-        orm.create_all()
     if args.dev:
         app.run()
     else:

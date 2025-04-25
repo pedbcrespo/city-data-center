@@ -23,7 +23,7 @@ class DemandLocation:
             'demand': self.demand,
             'cep': self.cep,
             'observation': self.observation,
-            'createDate': self.createDate
+            'createDate': self.createDate.isoformat()
         }
 
     def json(self):
@@ -31,7 +31,7 @@ class DemandLocation:
             'demandId': self.demandId,
             'streetId': self.streetId,
             'observation': self.observation,
-            'createDate': self.createDate
+            'createDate': self.createDate.isoformat()
         }
     
     def getRes(self, demand:Demand, street: Street, district: District, city: City, state: State):
@@ -43,5 +43,5 @@ class DemandLocation:
             'demand': demand.name,
             'description': demand.description,
             'observation': self.observation,
-            'createDate': self.createDate
+            'createDate': self.createDate.isoformat()
         }

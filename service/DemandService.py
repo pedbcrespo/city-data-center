@@ -31,51 +31,51 @@ class DemandService:
 
     def save(self, demandLocation: DemandLocation) -> DemandLocation: 
         getInfoByCepUrl = f"https://viacep.com.br/ws/{demandLocation.cep}/json/"
-        try:
-            response = requests.get(getInfoByCepUrl)
-            data = response.json()
-            streetName = data['logradouro']
-            districtName = data['bairro']
-            cityName = data['localidade']
-            stateName = data['estado']
 
-            state = State.query.filter(State.name == stateName).first()
-            city = (City.query.filter(and_(City.name == cityName, City.state_id == state.id)).first())
-
-            street = self.__getStreet__(streetName, districtName, city)
-            demand = self.__getDemand__(demandLocation)
-
-            demandLocation.completeInfo(street.id, demand.id)
-            mongo.db.get_collection('demand_location').insert_one(demandLocation.json())
-            return demandLocation.get()
-        except:
-            print("ERRO")
-            return None
-
-    def __getStreet__(self, streetName: str, districtName: str, city:City) -> Street:
-        district = District.query.filter(and_(District.name == districtName, District.city_id == city.id)).first()
-        if not district:
-            return self.__saveAddress__(streetName, districtName, city)
-        return Street.query.filter(and_(Street.name == streetName, Street.district_id == district.id)).first()
+        response = requests.get(getInfoByCepUrl)
+        data = response.json()
+        streetName = data['logradouro']
+        districtName = data['bairro']
+        cityName = data['localidade']
+        stateName = data['estado']
+        state = State.query.filter(State.name == stateName).first()
+        city = City.query.filter(and_(City.name == cityName, City.state_id == state.id)).first()
+        street = self.__saveAddress__(streetName, districtName, city)
+        demand = self.__getDemand__(demandLocation)
+        
+        demandLocation.completeInfo(street.id, demand.id)
+        mongo.db.get_collection('demand_location').insert_one(demandLocation.json())
+        return demandLocation.get()
 
         
     def __saveAddress__(self, streetName:str, districtName:str, city:City) -> Street:
-        district = District.query(and_(District.name == districtName, District.city_id == city.id))
+        district = District.query.filter(and_(District.name == districtName, District.city_id == city.id)).first()
         if not district:
             district = districtService.save(districtName, city.id)
-        street = Street.query(and_(Street.name == streetName, Street.district_id == district.id))
-        if not district:
+        street = Street.query.filter(and_(Street.name == streetName, Street.district_id == district.id)).first()
+        if not street:
             street = streetService.save(streetName, district.id)
         return street
     
     def __getDemand__(self, demandLocation: DemandLocation) -> Demand:
-        demand = Demand.query.filter(and_(Demand.name == demandLocation.demand, Demand.description == demandLocation.description)).first()
+        demand = Demand.query.filter(and_(
+            Demand.name == demandLocation.demand,
+            Demand.description == demandLocation.description)
+        ).first()
+        print(demand)
         if not demand:
             demand = Demand(demandLocation.demand, demandLocation.description)
             orm.session.add(demand)
             orm.session.commit()
-            demand = Demand.query.filter(and_(Demand.name == demandLocation.demand, Demand.description == demandLocation.description))
+            demand = Demand.query.filter(
+                and_(
+                    Demand.name == demandLocation.demand,
+                    Demand.description == demandLocation.description
+                )
+            ).first()
+
         return demand
+
     
     def __setDemandLocation__(result: dict) -> dict:
         demand = Demand.query.filter(Demand.id == result['demandId'])
