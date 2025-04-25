@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from flask import redirect, request, render_template, make_response
+from flask import request
 from service.DemandService import DemandService
 from model.demands.DemandLocation import DemandLocation
 
@@ -10,5 +10,7 @@ class Demand(Resource):
     def get(self):
         return demandService.getAll()
     
-    def post(self, demandLocation: DemandLocation):
+    def post(self):
+        data = request.get_json()
+        demandLocation = DemandLocation(data['demand'], data['description'], data['observation'], data['cep'])
         return demandService.save(demandLocation)

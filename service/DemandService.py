@@ -38,7 +38,6 @@ class DemandService:
             stateName = data['estado']
 
             street = self.__getStreet__(streetName, districtName, cityName, stateName)
-
             demand = Demand.query.filter(and_(Demand.name == demandLocation.demand, Demand.description == demandLocation.description)).first()
 
             if not demand:
@@ -50,30 +49,23 @@ class DemandService:
             if not street:
                 street = self.__saveAddress__(streetName, districtName, cityName, stateName)
             
+
             demandLocation.completeInfo(street.id, demand.id)
             mongo.db.get_collection('demand_location').insert_one(demandLocation.json())
             return demandLocation.get()
-
         except:
             print("ERRO")
+            return None
 
     def __getStreet__(self, streetName: str, districtName: str, cityName:str, stateName:str):
-        district_alias = aliased(District)
-        city_alias = aliased(City)
-        state_alias = aliased(State)
-        try:
-            result = (orm.session.query(Street)
-            .join(district_alias, Street.district_id == district_alias.id)
-            .join(city_alias, district_alias.city_id == city_alias.id)
-            .join(state_alias, city_alias.state_id == state_alias.id)
-            .filter(Street.name == streetName)
-            .filter(district_alias.name == districtName)
-            .filter(city_alias.name == cityName)
-            .filter(state_alias.name == stateName)
-            .one())
-            return result
-        except:
+        state = State.query.filter(State.name == stateName).first()
+        city = (City.query.filter(and_(City.name == cityName, City.state_id == state.id)).first())
+        district = District.query.filter(and_(District.name == districtName, District.city_id == city.id)).first()
+        if not district:
             return None
+        street = Street.query.filter(and_(Street.name == streetName, Street.district_id == district.id)).first()
+        print(street)
+        return street
         
     def __saveAddress__(self, streetName, districtName, cityName, stateName):
         state = State.query.filter(State.name == stateName).first()
