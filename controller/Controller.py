@@ -1,9 +1,10 @@
 from flask_restful import Resource
 from flask import redirect, render_template, make_response
 from configuration.config import api, BASE_URL
-from CityController import Cities, City
-from StateController import States, State
-from DemandController import Demand
+from controller.CityController import Cities, City
+from controller.StateController import States, State
+from controller.DemandController import Demand
+
 
 class Initial(Resource):
     def get(self):

@@ -22,7 +22,10 @@ MONGO_DB = db.mongoDB if args.dev else os.getenv("MONGO_DB", "city_database")
 
 MONGO_URI = f"mongodb://{MONGO_HOST}:{MONGO_PORT}/{MONGO_DB}"
 
-app = Flask(__name__)
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+TEMPLATE_FOLDER = os.path.join(BASE_DIR, 'templates')
+
+app = Flask(__name__, template_folder=TEMPLATE_FOLDER)
 CORS(app, origins='*')
 app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 app.config["MONGO_URI"] = MONGO_URI

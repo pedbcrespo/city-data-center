@@ -8,8 +8,8 @@ from sqlalchemy.orm import aliased
 from sqlalchemy import and_
 from configuration.config import mongo, ormDatabase as orm
 from flask import jsonify
-from StreetService import StreetService
-from DistrictService import DistrictService
+from service.StreetService import StreetService
+from service.DistrictService import DistrictService
 
 import requests
 
