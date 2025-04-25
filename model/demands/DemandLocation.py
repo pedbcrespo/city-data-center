@@ -1,5 +1,10 @@
 from configuration.config import ormDatabase as orm
 from datetime import datetime
+from model.demands.Demand import Demand
+from model.State import State
+from model.City import City
+from model.District import District
+from model.Street import Street
 
 class DemandLocation:
     def __init__(self, demand: str, description: str, observation: str, cep:str):
@@ -25,6 +30,18 @@ class DemandLocation:
         return {
             'demandId': self.demandId,
             'streetId': self.streetId,
+            'observation': self.observation,
+            'createDate': self.createDate
+        }
+    
+    def getRes(self, demand:Demand, street: Street, district: District, city: City, state: State):
+        return {
+            'state': state.name,
+            'city': city.name,
+            'district': district.name,
+            'street': street.name,
+            'demand': demand.name,
+            'description': demand.description,
             'observation': self.observation,
             'createDate': self.createDate
         }
