@@ -42,9 +42,22 @@ python -m venv venv
 ```bash
 pip install -r requirements.txt
 ```
-*   Após a instalação, ative o myslq que DEVE estar instalado no computador e importe a base de dados
+*   Após a instalação, ative o MySQL que DEVE estar instalado no computador assim como o MongoDB e importe a base de dados
+*   É provavale que seja necessario executar tambem esses comandos:
+(Windows - Powershell):
+```bash
+$env:FLASK_APP = "main.py"
+``` 
+(Linux/MacOs):
+```bash
+export FLASK_APP=main.py
+``` 
+Em seguida execute:
+```bash
+flask db init
+``` 
 *   Após isso, rode o projeto
 * IMPORTANTE: antes de Executar, crie uma conexao nova com os dados no dev_configuration.py **ISSO É TEMPORARIO E TEM QUE SER TRATADO**
 ```bash
-python main.py --dev
+python main.py
 ```
