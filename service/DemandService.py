@@ -1,6 +1,6 @@
 from typing import List
 from model.demands.DemandLocation import DemandLocation
-from model.demands.Demand import Demand
+from model.Demand import Demand
 from model.Street import Street
 from model.District import District
 from model.City import City
@@ -47,7 +47,6 @@ class DemandService:
         mongo.db.get_collection('demand_location').insert_one(demandLocation.json())
         return demandLocation.get()
 
-        
     def __saveAddress__(self, streetName:str, districtName:str, city:City) -> Street:
         district = District.query.filter(and_(District.name == districtName, District.city_id == city.id)).first()
         if not district:
@@ -76,7 +75,6 @@ class DemandService:
 
         return demand
 
-    
     def __setDemandLocation__(result: dict) -> dict:
         demand = Demand.query.filter(Demand.id == result['demandId'])
         street = Street.query.filter(Street.id == result['streetId']).first()

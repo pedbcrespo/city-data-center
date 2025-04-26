@@ -1,6 +1,7 @@
 from flask import Flask
+from model import *
 from configuration.config import app, ENV
-from controller.Controller import *
+from controller import *
 
 if __name__ == '__main__':
     if not ENV:

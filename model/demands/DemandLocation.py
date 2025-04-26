@@ -1,6 +1,6 @@
 from configuration.config import ormDatabase as orm
 from datetime import datetime
-from model.demands.Demand import Demand
+from model.Demand import Demand
 from model.State import State
 from model.City import City
 from model.District import District

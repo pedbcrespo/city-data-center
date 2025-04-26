@@ -1,6 +1,5 @@
 from flask_restful import Resource
-from configuration.config import api, BASE_URL
-from service.StateService import StateService
+from service import StateService
 
 service = StateService()
 class States(Resource):
