@@ -55,7 +55,12 @@ export FLASK_APP=main.py
 Em seguida execute:
 ```bash
 flask db init
-``` 
+```
+Por fim:
+```bash
+flask db migrate -m "Criação das tabelas"
+```
+
 *   Após isso, rode o projeto
 * IMPORTANTE: antes de Executar, crie uma conexao nova com os dados no dev_configuration.py **ISSO É TEMPORARIO E TEM QUE SER TRATADO**
 ```bash

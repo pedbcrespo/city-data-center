@@ -1,5 +1,5 @@
 from typing import List
-from model.demands.DemandLocation import DemandLocation
+from model.DemandLocation import DemandLocation
 from model.Demand import Demand
 from model.Street import Street
 from model.District import District

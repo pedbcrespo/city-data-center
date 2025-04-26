@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask import request
 from service import DemandService
-from model.demands.DemandLocation import DemandLocation
+from model import DemandLocation
 
 
 demandService = DemandService()
