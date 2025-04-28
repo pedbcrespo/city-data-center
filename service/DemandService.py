@@ -41,7 +41,7 @@ class DemandService:
         state = State.query.filter(State.name == stateName).first()
         city = City.query.filter(and_(City.name == cityName, City.state_id == state.id)).first()
         street = self.__saveAddress__(streetName, districtName, city)
-        demand = self.__getDemand__(demandLocation)
+        demand = self.__getDemand__(demandLocation, city)
         
         demandLocation.completeInfo(street.id, demand.id)
         mongo.db.get_collection('demand_location').insert_one(demandLocation.json())
@@ -56,14 +56,14 @@ class DemandService:
             street = streetService.save(streetName, district.id)
         return street
     
-    def __getDemand__(self, demandLocation: DemandLocation) -> Demand:
+    def __getDemand__(self, demandLocation: DemandLocation, city: City) -> Demand:
         demand = Demand.query.filter(and_(
             Demand.name == demandLocation.demand,
             Demand.description == demandLocation.description)
         ).first()
         print(demand)
         if not demand:
-            demand = Demand(demandLocation.demand, demandLocation.description)
+            demand = Demand(demandLocation.demand, demandLocation.description, city.id)
             orm.session.add(demand)
             orm.session.commit()
             demand = Demand.query.filter(

@@ -2,6 +2,7 @@ import pymysql
 import json
 import requests
 import os
+import time
 from configuration.config import DB_HOST, DB_USER, DB_PASS, DB_NAME
 
 connection = pymysql.connect(host=DB_HOST,
@@ -44,6 +45,9 @@ def getDistrict(uf:str, cityName:str, streetName:str):
         data = requests.get(url)
         district = data.json()
         status = data.status_code
+        if status != 200:
+            print('AGUARDANDO 10 SEG...')
+            time.sleep(10)
     return district[0]['bairro']
 
 def getStreetFromJson(fileName: str) -> list:
