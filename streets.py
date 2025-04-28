@@ -130,8 +130,12 @@ def saveReadData(stateId, cityId, fileName='readData.json'):
         print(f"Ocorreu um erro ao salvar os IDs: {e}")
 
 def readMemoryCard():
-    pass
-
+    fileName = 'readData.json'
+    if not os.path.exists(fileName):
+        return None
+    with open(fileName) as file:
+        return json.load(file)
+        
 if __name__ == '__main__':
     currentStateId = None
     currentCityId = None
