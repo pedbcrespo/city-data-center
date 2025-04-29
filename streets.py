@@ -13,19 +13,29 @@ connection = pymysql.connect(host=DB_HOST,
                              cursorclass=pymysql.cursors.DictCursor)
 
 
-def getStates():
+def getStates(currentStateId:int=None):
     result = []
     sql = "SELECT id, abbreviation FROM state"
+    if currentStateId:
+        sql += "WHERE id > %s"
     with connection.cursor() as cursor:
-        cursor.execute(sql)
+        if currentStateId:
+            cursor.execute(sql, (currentStateId, ))
+        else:
+            cursor.execute(sql)
         result = list(cursor.fetchall())
     return result
 
-def getCities(stateId:int):
+def getCities(stateId:int, currentCityId:int = None):
     result = []
     sql = "SELECT id, ibge_id, name, state_id FROM city WHERE state_id = %s"
+    if currentCityId:
+        sql += "WHERE id > %s"
     with connection.cursor() as cursor:
-        cursor.execute(sql, (stateId,))
+        if currentCityId:
+            cursor.execute(sql, (stateId,))
+        else:
+            cursor.execute(sql)
         result = list(cursor.fetchall())
     return result
 
@@ -137,8 +147,9 @@ def readMemoryCard():
         return json.load(file)
         
 if __name__ == '__main__':
-    currentStateId = None
-    currentCityId = None
+    memory = readMemoryCard()
+    currentStateId = None if not memory else memory['stateId']
+    currentCityId = None if not memory else memory['cityId']
     states = getStates(currentStateId)
     currentCity = []
     for state in states:
