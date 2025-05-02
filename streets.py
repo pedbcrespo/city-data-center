@@ -2,78 +2,77 @@ import pymysql
 import json
 import requests
 import os
+import concurrent.futures
 import time
+from typing import List
 from configuration.config import DB_HOST, DB_USER, DB_PASS, DB_NAME
 
-connection = pymysql.connect(host=DB_HOST,
-                             user=DB_USER,
-                             password=DB_PASS,
-                             database=DB_NAME,
-                             charset='utf8mb4',
-                             cursorclass=pymysql.cursors.DictCursor)
+def get_connection():
+    return pymysql.connect(
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASS,
+        database=DB_NAME,
+        charset='utf8mb4',
+        cursorclass=pymysql.cursors.DictCursor
+    )
 
-
-def getStates(currentStateId:int=None):
+def getStates() -> List[dict]:
     result = []
     sql = "SELECT id, abbreviation FROM state"
-    if currentStateId:
-        sql += "WHERE id > %s"
+    connection = get_connection()
     with connection.cursor() as cursor:
-        if currentStateId:
-            cursor.execute(sql, (currentStateId, ))
-        else:
-            cursor.execute(sql)
+        cursor.execute(sql)
         result = list(cursor.fetchall())
     return result
 
-def getCities(stateId:int, currentCityId:int = None):
+def getCities(stateId:int) -> List[dict]:
     result = []
     sql = "SELECT id, ibge_id, name, state_id FROM city WHERE state_id = %s"
-    if currentCityId:
-        sql += "WHERE id > %s"
+    connection = get_connection()
     with connection.cursor() as cursor:
-        if currentCityId:
-            cursor.execute(sql, (stateId,))
-        else:
-            cursor.execute(sql)
+        cursor.execute(sql, (stateId,))
         result = list(cursor.fetchall())
     return result
 
-def formatName(feature: dict):
+def formatName(feature: dict) -> str:
     if (not 'NM_TIP_LOG' in feature) and (not 'NM_TIT_LOG' in feature) and (not 'NM_LOG' in feature):
         return None
-    nameParts = [feature['NM_TIP_LOG'], feature['NM_TIT_LOG'], feature['NM_LOG']]
+    nameParts = [feature['NM_TIT_LOG'], feature['NM_LOG']]
     streetName = " ".join(list(filter(lambda nm: nm != None, nameParts)))
     return streetName
 
-def getDistrict(uf:str, cityName:str, streetName:str):
+def getCompleteAddress(uf:str, cityName:str, streetName:str, count=0) -> List[dict]:
     url = f"https://viacep.com.br/ws/{uf}/{cityName}/{streetName}/json/"
-    print(url)
     status = None
-    district = None
+    completeAddress = None
     while status != 200:
-        data = requests.get(url)
-        district = data.json()
-        status = data.status_code
-        if status != 200:
-            print('AGUARDANDO 10 SEG...')
-            time.sleep(10)
-    return district[0]['bairro']
+        data = requests.get(url, timeout=60)
+        print(url, data.status_code)
+        if count == 15 or data.status_code != 200:
+            wait = 60
+            print(f'AGUARDANDO {wait} SEG...')
+            time.sleep(wait)
+            print(f'RECOMECANDO')
+        else:
+            completeAddress = data.json()
+            break
+    return completeAddress
 
-def getStreetFromJson(fileName: str) -> list:
+def getStreetFromJson(fileName: str) -> List[dict]:
     with open(fileName, 'r') as jsonFile:
         data = json.load(jsonFile)
         features = data['features']
         streets = [formatName(feature['properties']) for feature in features]
-        return list(filter(lambda s: s!= None, streets))
+        return list(set(filter(lambda s: s!= None, streets)))
 
-def saveDistricts(cityId: int, districtNames: list):
+def saveDistricts(cityId: int, districtNames: list) -> List[dict]:
     if not districtNames:
         return []
     
     sql_select = f"SELECT name FROM district WHERE city_id = %s AND name IN ({', '.join(['%s'] * len(districtNames))})"
+    connection = get_connection()
     params = [cityId] + districtNames
-
     with connection.cursor() as cursor:
         cursor.execute(sql_select, params)
         existing = set(row['name'] for row in cursor.fetchall())
@@ -89,11 +88,12 @@ def saveDistricts(cityId: int, districtNames: list):
         cursor.execute(sql, (cityId,))
         return list(cursor.fetchall())
 
-def saveStreets(districtId: int, streetNames: list):
+def saveStreets(districtId: int, streetNames: list) -> List[dict]:
     if not streetNames:
         return []
 
     sql_select = f"SELECT name FROM street WHERE district_id = %s AND name IN ({', '.join(['%s'] * len(streetNames))})"
+    connection = get_connection()
     params = [districtId] + streetNames
 
     with connection.cursor() as cursor:
@@ -111,59 +111,64 @@ def saveStreets(districtId: int, streetNames: list):
         cursor.execute(sql, (districtId,))
         return list(cursor.fetchall())
 
-def handleSave(cityId:int, currentCity: list):
-    districts = list(filter(lambda add: add!='', set(map(lambda add: add['district'], currentCity))))
-    districts = saveDistricts(cityId, districts)
-    for district in districts:
-        streets = list(filter(lambda add: add['district'] == district['name'], currentCity))
-        streetNames = list(map(lambda add: add['street'], streets))
-        saveStreets(district['id'], streetNames)
+def handleSaveStreets(addressList:list) -> None:
+    if len(addressList) == 0:
+        return
+    districts = list(set([addrs['district'] for addrs in addressList]))
+    cityId = addressList[0]['cityId']
+    print("SALVANDO DADOS DA CIDADE: " + cityId)
+    savedDistricts = saveDistricts(cityId, districts)
+    for savedDistrict in savedDistricts:
+        districtId = savedDistrict['id']
+        streets = list(
+            map(lambda addrs: addrs['street'], filter(lambda addrs: addrs['district'] == savedDistrict['name']))
+        )
+        saveStreets(districtId, streets)
+    print("BAIRROS E RUAS DA CIDADE " + cityId + " SALVOS COM SUCESSO")
 
-def saveReadData(stateId, cityId, fileName='readData.json'):
-    dados = {
-        "stateId": stateId,
-        "cityId": cityId
-    }
+def handleStreets(state:dict, city:dict, streets:list) -> List[dict]:
+    citiesData = []
+    count = 0
+    for street in streets:
+        completeAddressList = getCompleteAddress(state['abbreviation'], city['name'], street, count)
+        citiesData += list(map(lambda addrs: {
+            'stateId': state['id'], 
+            'cityId': city['id'], 
+            'street': street, 
+            'district': addrs['bairro']
+        }, completeAddressList))
+        count += 1
+    return handleSaveStreets(citiesData)
 
-    try:
-        if os.path.exists(fileName):
-            with open(fileName, 'r', encoding='utf-8') as file:
-                content = json.load(file)
-                content.update(dados)
-        else:
-            content = dados
-        with open(fileName, 'w', encoding='utf-8') as file:
-            json.dump(content, file, ensure_ascii=False, indent=4)
-        print(f"Arquivo '{fileName}' atualizado com sucesso.")
+def cityProcess(state: dict) -> None:
+    cities = getCities(state['id'])
+    for city in cities:
+        fileName = f"./streets_json/{state['abbreviation']}/{city['ibge_id']}_faces_de_logradouros_2022.json"
+        streets = getStreetFromJson(fileName)
+        handleStreets(state, city, streets)
 
-    except Exception as e:
-        print(f"Ocorreu um erro ao salvar os IDs: {e}")
+def statesProcess(statesList: list) -> None:
+    for state in statesList:
+        print('INICIANDO PROCESSO EM ' + state['abbreviation'])
+        cityProcess(state)
+        print('PROCESSO ' + state['abbreviation'] + 'FINALIZADO')
 
-def readMemoryCard():
-    fileName = 'readData.json'
-    if not os.path.exists(fileName):
-        return None
-    with open(fileName) as file:
-        return json.load(file)
-        
+def getDistricutedStates(states:list) -> List[List[dict]]:
+    ufMatrix = [
+        ["SP", "AM", "RO"],                    
+        ["MG"],                                
+        ["RS", "GO", "DF", "RR", "AP"],        
+        ["BA", "SC", "AC", "ES"],              
+        ["PR", "PE", "MA", "PA", "CE"],        
+    ]
+    distributedStates = []
+    for ufList in ufMatrix:
+        distributedStates.append([state for state in states if state['abbreviation'] in ufList])
+    return distributedStates
+
 if __name__ == '__main__':
-    memory = readMemoryCard()
-    currentStateId = None if not memory else memory['stateId']
-    currentCityId = None if not memory else memory['cityId']
-    states = getStates(currentStateId)
-    currentCity = []
-    for state in states:
-        currentStateId = state['id']
-        cities = getCities(state['id'])
-        for city in cities:
-            currentCityId = city['id']
-            fileName = f"./streets_json/{state['abbreviation']}/{city['ibge_id']}_faces_de_logradouros_2022.json"
-            streets = getStreetFromJson(fileName)
-            group = [{'stateId': state['id'], 'cityId': city['id'], 'street': street, 'district': getDistrict(state['abbreviation'], city['name'], street)} for street in streets]
-            currentCity.append(group)
-        
-        handleSave(currentCityId, currentCity)
-        currentCity = []
-    print('PROCESSO FINALIZADO')
-
-
+    states = getStates()
+    distributedStates = getDistricutedStates(states)
+    numThreads = len(distributedStates)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=numThreads) as executor:
+        resultados = list(executor.map(statesProcess, distributedStates))
