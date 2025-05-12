@@ -21,7 +21,7 @@ class DemandService:
     def getAll(self) -> List[dict]:
         results = list(mongo.db.get_collection('demand_location').find())
         demandLocationList = [self.__setDemandLocation__(result) for result in results]
-        return demandLocationList
+        return jsonify(demandLocationList)
     
     def getByCity(self, cityId:int) -> List[dict]:
         districts = list(District.query.filter(District.city_id == cityId))
@@ -30,14 +30,7 @@ class DemandService:
         return jsonify(results)
 
     def save(self, demandLocation: DemandLocation) -> DemandLocation: 
-        getInfoByCepUrl = f"https://viacep.com.br/ws/{demandLocation.cep}/json/"
-
-        response = requests.get(getInfoByCepUrl)
-        data = response.json()
-        streetName = data['logradouro']
-        districtName = data['bairro']
-        cityName = data['localidade']
-        stateName = data['estado']
+        streetName, districtName, cityName, stateName = self.__getAddressByViaCep__(demandLocation.cep)
         state = State.query.filter(State.name == stateName).first()
         city = City.query.filter(and_(City.name == cityName, City.state_id == state.id)).first()
         street = self.__saveAddress__(streetName, districtName, city)
@@ -45,7 +38,11 @@ class DemandService:
         
         demandLocation.completeInfo(street.id, demand.id)
         mongo.db.get_collection('demand_location').insert_one(demandLocation.json())
-        return demandLocation.get()
+        return jsonify(demandLocation.get())
+
+    def saveDemand(self, title:str, description:str) -> dict:
+        demand = self.__saveDemand__(title, description)
+        return jsonify(demand.json())
 
     def __saveAddress__(self, streetName:str, districtName:str, city:City) -> Street:
         district = District.query.filter(and_(District.name == districtName, District.city_id == city.id)).first()
@@ -53,7 +50,7 @@ class DemandService:
             district = districtService.save(districtName, city.id)
         street = Street.query.filter(and_(Street.name == streetName, Street.district_id == district.id)).first()
         if not street:
-            street = streetService.save(streetName, district.id)
+            street = streetService.save(streetName, district.id, city.id)
         return street
     
     def __getDemand__(self, demandLocation: DemandLocation, city: City) -> Demand:
@@ -63,16 +60,7 @@ class DemandService:
         ).first()
         print(demand)
         if not demand:
-            demand = Demand(demandLocation.demand, demandLocation.description, city.id)
-            orm.session.add(demand)
-            orm.session.commit()
-            demand = Demand.query.filter(
-                and_(
-                    Demand.name == demandLocation.demand,
-                    Demand.description == demandLocation.description
-                )
-            ).first()
-
+            demand = self.__saveDemand__(demandLocation.demand, demandLocation.description)
         return demand
 
     def __setDemandLocation__(result: dict) -> dict:
@@ -83,3 +71,24 @@ class DemandService:
         state = State.query.filter(State.id == city.state_id)
         demandLocation = DemandLocation(demand.name, demand.description, result['observation'], None)
         return demandLocation.getRes(demand, street, district, city, state)
+    
+    def __getAddressByViaCep__(self, cep):
+        getInfoByCepUrl = f"https://viacep.com.br/ws/{cep}/json/"
+        response = requests.get(getInfoByCepUrl)
+        data = response.json()
+        streetName = data['logradouro']
+        districtName = data['bairro']
+        cityName = data['localidade']
+        stateName = data['estado']
+
+        return streetName, districtName, cityName, stateName
+    
+    def __saveDemand__(self, title:str, description:str) -> Demand:
+        demand = Demand.query.filter(and_(Demand.name == title, Demand.description == description)).first()
+        if demand != None:
+            return demand
+        demand = Demand(title, description)
+        orm.session.add(demand)
+        orm.session.commit()
+        demand = Demand.query.filter(and_(Demand.name == title, Demand.description == description)).first()
+        return demand

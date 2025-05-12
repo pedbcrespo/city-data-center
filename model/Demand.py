@@ -5,14 +5,14 @@ class Demand(orm.Model):
     id = orm.Column(orm.Integer, primary_key=True)
     name = orm.Column(orm.String(200))
     description = orm.Column(orm.String(500))
-    createDate = orm.Column(orm.DateTime)
+    creationDate = orm.Column(orm.DateTime, nullable=False, default=datetime.now())
     def __init__(self, name, description):
         self.name = name
         self.description = description
-        self.createDate = datetime.now()
+        self.creationDate = datetime.now()
         
     def __repr__(self):
-        return f"({self.id}, {self.name}, {self.description}, {self.createDate.isoformat()})"
+        return f"({self.id}, {self.name}, {self.description}, {self.creationDate.isoformat()})"
     
     def json(self):
-        return {'id': self.id, 'name': self.name, 'description': self.description, 'createDate': self.createDate.isoformat() }
+        return {'id': self.id, 'name': self.name, 'description': self.description, 'creationDate': self.creationDate.isoformat() }

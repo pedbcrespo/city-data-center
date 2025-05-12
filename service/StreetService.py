@@ -11,8 +11,8 @@ class StreetService:
         districts =  Street.query.all()
         return districts
     
-    def save(self, streetName:str, districtId:int) -> Street:
-        street = Street(streetName, districtId)
+    def save(self, streetName:str, districtId:int, cityId: int) -> Street:
+        street = Street(streetName, districtId, cityId)
         orm.session.add(street)
         orm.session.commit()
         return Street.query.filter(Street.name == streetName and Street.district_id == districtId).first()

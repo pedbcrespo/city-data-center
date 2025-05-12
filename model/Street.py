@@ -3,8 +3,8 @@ from configuration.config import ormDatabase as orm
 class Street(orm.Model):
     id = orm.Column(orm.BigInteger, primary_key=True)
     name = orm.Column(orm.String(200))
-    district_id = orm.Column(orm.BigInteger, orm.ForeignKey('district.id'))
-    city_id = orm.Column(orm.BigInteger, orm.ForeignKey('city.id'))
+    district_id = orm.Column(orm.BigInteger, orm.ForeignKey('district.id'), nullable=True, default=None)
+    city_id = orm.Column(orm.BigInteger, orm.ForeignKey('city.id'), nullable=True, default=None)
     
     def __init__(self, name, district_id, city_id):
         self.name = name

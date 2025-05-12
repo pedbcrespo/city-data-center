@@ -14,3 +14,8 @@ class Demand(Resource):
         data = request.get_json()
         demandLocation = DemandLocation(data['demand'], data['description'], data['observation'], data['cep'])
         return demandService.save(demandLocation)
+    
+class SingleDemand(Resource):
+    def post(self):
+        data = request.get_json()
+        return demandService.saveDemand(data['title'], data['description'])
