@@ -12,5 +12,5 @@ class Cities(Resource):
 
 class City(Resource):
     def get(self, city_id):
-        return cityService.getCity(city_id)
+        return cityService.getCityById(city_id)
 

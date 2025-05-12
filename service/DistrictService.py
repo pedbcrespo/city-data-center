@@ -2,6 +2,7 @@ from model.District import District
 from model.City import City 
 from model.State import State 
 from typing import List
+from sqlalchemy import and_
 from configuration.config import ormDatabase as orm
 
 
@@ -14,6 +15,10 @@ class DistrictService:
         districts = District.query.filter(District.city_id==city.id).all()
         return districts
         
+    def getByName(self, districtName:str, cityId:int) -> District:
+        return District.query.filter(and_(District.name == districtName, District.city_id == cityId)).first()
+        
+
     def saveMany(self, districts:List[District]):
         orm.session.add_all(districts)
         orm.session.commit()
