@@ -40,17 +40,18 @@ class AddressService:
         state = stateService.getById(city.stateId)
         return {'street': street, 'district': district, 'city': city, 'state': state}
 
-    def saveAddress(self, street:str, city:str, uf:str) -> dict:
+    def saveAddress(self, street:str, city:str, uf:str) -> List[dict]:
         url = f"https://viacep.com.br/ws/{uf}/{city}/{street}/json/"
         data = requests.get(url)
+        addressList = []
         for info in data.json():
             street = info['logradouro']
             district = info['bairro']
             city = info['localidade']
             state = info['estado']
             address = {'street': street, 'district': district, 'city': city, 'state': state}
-            self.__saveAddress__(address)
-        return self.__saveAddress__(address)
+            addressList.append(self.__saveAddress__(address))
+        return addressList
 
     def __saveAddress__(self, address: dict) -> dict:
         city = cityService.getCity(address['uf'], address['city'])
