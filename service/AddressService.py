@@ -17,9 +17,9 @@ stateService = StateService()
 class AddressService:
 
     def saveCep(self, cep:str) -> dict:
-        getInfoByCepUrl = f"https://viacep.com.br/ws/{cep}/json/"
+        url = f"https://viacep.com.br/ws/{cep}/json/"
         try:
-            response = requests.get(getInfoByCepUrl)
+            response = requests.get(url)
             data = response.json()
             street = data['logradouro']
             district = data['bairro']

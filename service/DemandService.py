@@ -31,6 +31,8 @@ class DemandService:
     def save(self, demandLocation: DemandLocation) -> dict: 
         address = addressService.saveCep(demandLocation.cep)
         demand = self.__getDemand__(demandLocation.demandId)
+        if not demand:
+            return None
         mongo.db.get_collection('demand_location').insert_one(demandLocation.json())
         return demandLocation.getRes(demand, address['street'], address['district'], address['city'], address['state'])
 
