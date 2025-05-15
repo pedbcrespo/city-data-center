@@ -1,6 +1,4 @@
-from model.District import District 
-from model.City import City 
-from model.State import State 
+from model.Address import Address
 from typing import List
 from configuration.config import ormDatabase as orm
 from service.StreetService import StreetService
@@ -18,7 +16,7 @@ model = orm.Model
 
 class AddressService:
 
-    def saveCep(self, cep:str) -> dict:
+    def saveCep(self, cep:str) -> Address:
         url = f"https://viacep.com.br/ws/{cep}/json/"
         try:
             response = requests.get(url)
@@ -33,16 +31,20 @@ class AddressService:
             print('ERRO NO PROCESSO DE BUSCA')
             return None
 
-    def getAddressByStreetId(self, streetId: int) -> dict:
+    def getAddressByStreetId(self, streetId: int) -> Address:
         street = streetService.getById(streetId)
         if not street:
             return None
         district = districtService.getById(street.districtId)
         city = cityService.getById(district.cityId)
         state = stateService.getById(city.stateId)
-        return {'street': street, 'district': district, 'city': city, 'state': state}
+        address = Address(street, district, city, state)
+        return address
 
-    def saveAddress(self, street:str, city:str, uf:str) -> List[dict[str, model]]:
+    def saveAddressByObj(self, address: dict) -> Address:
+        return self.__saveAddress__(address)
+
+    def saveAddress(self, street:str, city:str, uf:str) -> List[Address]:
         url = f"https://viacep.com.br/ws/{uf}/{city}/{street}/json/"
         data = requests.get(url)
         addressList = []
@@ -50,17 +52,18 @@ class AddressService:
             street = info['logradouro']
             district = info['bairro']
             city = info['localidade']
-            state = info['estado']
-            address = {'street': street, 'district': district, 'city': city, 'state': state}
+            uf = info['uf']
+            address = {'street': street, 'district': district, 'city': city, 'uf': uf}
             addressList.append(self.__saveAddress__(address))
         return addressList
 
-    def __saveAddress__(self, address: dict) -> dict[str, model]:
+    def __saveAddress__(self, address: dict) -> Address:
         state = stateService.getState(address['uf'])
         city = cityService.save(address['city'], state.id)
         district = districtService.save(address['district'], city.id)
         street = streetService.save(address['street'], district.id, city.id)
-        return {'street': street, 'district': district, 'city': city, 'state': state}
+        objAddress = Address(street, district, city, state)
+        return objAddress
         
 
         

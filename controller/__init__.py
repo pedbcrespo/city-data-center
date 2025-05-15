@@ -4,6 +4,7 @@ from configuration.config import api, BASE_URL
 from controller.CityController import Cities, City
 from controller.StateController import States, State
 from controller.DemandController import Demand, SingleDemand
+from controller.AddressController import Address, AddressComplete, AddressName
 
 
 class Initial(Resource):
@@ -23,3 +24,6 @@ api.add_resource(States, f"{BASE_URL}/states")
 api.add_resource(State, f"{BASE_URL}/state/<uf>")
 api.add_resource(Demand, f"{BASE_URL}/demand/")
 api.add_resource(SingleDemand, f"{BASE_URL}/single-demand/")
+api.add_resource(Address, f"{BASE_URL}/address/<string:cep>")
+api.add_resource(AddressComplete, f"{BASE_URL}/address")
+api.add_resource(AddressName, f"{BASE_URL}/address-list/<string:uf>/<string:city>/<string:street>")

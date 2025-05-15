@@ -5,3 +5,4 @@ from model.District import District
 from model.Street import Street
 from model.DemandLocation import DemandLocation
 from model.Demand import Demand
+from model.Address import Address
