@@ -8,12 +8,18 @@ from configuration.config import ormDatabase as orm
 
 
 class StreetService:
-    def get(self):
-        districts =  Street.query.all()
-        return districts
+    def get(self) -> List[Street]:
+        streets =  Street.query.all()
+        return streets
     
     def getByName(self, streetName:str, districtId:int, cityId: int) -> Street:
         return Street.query.filter(and_(Street.name == streetName, Street.district_id == districtId, Street.city_id == cityId)).first()
+    
+    def getById(self, streetId: int) -> Street:
+        return Street.query.filter(Street.id == streetId).first()
+    
+    def getByCityId(self, cityId:int) -> List[Street]:
+        return Street.query.filter(Street.city_id == cityId).all()
     
     def save(self, streetName:str, districtId:int, cityId: int) -> Street:
         street = Street(streetName, districtId, cityId)

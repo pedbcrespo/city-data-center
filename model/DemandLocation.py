@@ -7,24 +7,12 @@ from model.District import District
 from model.Street import Street
 
 class DemandLocation:
-    def __init__(self, demand: str, description: str, observation: str, cep:str):
+    def __init__(self, demandId: int, streetId: int, observation: str, cep:str = None):
         self.cep = cep.replace('-', '')
-        self.demand = demand
-        self.description = description
+        self.demandId = demandId
+        self.streetId = streetId
         self.observation = observation
         self.createDate = datetime.now()
-
-    def completeInfo(self, streetId:int, demandId:int):
-        self.streetId = streetId
-        self.demandId = demandId
-
-    def get(self):
-        return {
-            'demand': self.demand,
-            'cep': self.cep,
-            'observation': self.observation,
-            'createDate': self.createDate.isoformat()
-        }
 
     def json(self):
         return {
@@ -34,7 +22,7 @@ class DemandLocation:
             'createDate': self.createDate.isoformat()
         }
     
-    def getRes(self, demand:Demand, street: Street, district: District, city: City, state: State):
+    def getRes(self, demand:Demand, street: Street, district: District, city: City, state: State, createDate=None):
         return {
             'state': state.name,
             'city': city.name,
@@ -43,5 +31,5 @@ class DemandLocation:
             'demand': demand.name,
             'description': demand.description,
             'observation': self.observation,
-            'createDate': self.createDate.isoformat()
+            'createDate': self.createDate.isoformat() if not createDate else createDate
         }

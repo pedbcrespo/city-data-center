@@ -9,3 +9,6 @@ class StateService:
     def getState(self, uf: str):
         state = State.query.filter(State.abbreviation == uf).first()
         return state.json()
+    
+    def getById(self, stateId: int) -> State:
+        return State.query.filter(State.id == stateId).first()

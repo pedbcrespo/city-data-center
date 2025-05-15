@@ -5,7 +5,6 @@ from flask import jsonify
 addressService = AddressService()
 
 class Address(Resource):
-    def post(self):
-        data = request.get_json()
-        addressService.saveAddress(data)
-        return jsonify({'status': 'salvo com sucesso!'})
+    def get(self, cep):
+        addressService.saveCep(cep)
+        return jsonify({'status': 'salvo com sucesso'})

@@ -9,7 +9,7 @@ class CityService:
         cities = City.query.all()
         return [city.json() for city in cities]
 
-    def getCityById(self, cityId:int) -> dict:
+    def getById(self, cityId:int) -> dict:
         city = City.query.filter(City.id == cityId).first()
         return city.json()
     

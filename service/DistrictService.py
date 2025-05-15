@@ -18,7 +18,9 @@ class DistrictService:
     def getByName(self, districtName:str, cityId:int) -> District:
         return District.query.filter(and_(District.name == districtName, District.city_id == cityId)).first()
         
-
+    def getById(self, districtId:int) -> District:
+        return District.query.filter(District.id == districtId).first()
+    
     def saveMany(self, districts:List[District]):
         orm.session.add_all(districts)
         orm.session.commit()
