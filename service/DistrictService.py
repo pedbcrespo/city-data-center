@@ -27,6 +27,9 @@ class DistrictService:
         return districts
     
     def save(self, districtName:str, cityId:int) -> District:
+        district = self.getByName(districtName, cityId)
+        if district:
+            return district
         district = District(districtName, cityId)
         orm.session.add(district)
         orm.session.commit()

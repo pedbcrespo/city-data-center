@@ -14,6 +14,8 @@ districtService = DistrictService()
 cityService = CityService()
 stateService = StateService()
 
+model = orm.Model
+
 class AddressService:
 
     def saveCep(self, cep:str) -> dict:
@@ -40,7 +42,7 @@ class AddressService:
         state = stateService.getById(city.stateId)
         return {'street': street, 'district': district, 'city': city, 'state': state}
 
-    def saveAddress(self, street:str, city:str, uf:str) -> List[dict]:
+    def saveAddress(self, street:str, city:str, uf:str) -> List[dict[str, model]]:
         url = f"https://viacep.com.br/ws/{uf}/{city}/{street}/json/"
         data = requests.get(url)
         addressList = []
@@ -53,15 +55,11 @@ class AddressService:
             addressList.append(self.__saveAddress__(address))
         return addressList
 
-    def __saveAddress__(self, address: dict) -> dict:
-        city = cityService.getCity(address['uf'], address['city'])
+    def __saveAddress__(self, address: dict) -> dict[str, model]:
         state = stateService.getState(address['uf'])
-        district = districtService.getByName(address['district'], city.id)
-        if not district:
-            district = districtService.save(address['district'], city.id)
-        street = streetService.getByName(address['street'], district.id, city.id)
-        if not street:
-            street = streetService.save(address['street', district.id, city.id])
+        city = cityService.save(address['city'], state.id)
+        district = districtService.save(address['district'], city.id)
+        street = streetService.save(address['street'], district.id, city.id)
         return {'street': street, 'district': district, 'city': city, 'state': state}
         
 

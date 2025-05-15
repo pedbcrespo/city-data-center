@@ -22,6 +22,9 @@ class StreetService:
         return Street.query.filter(Street.city_id == cityId).all()
     
     def save(self, streetName:str, districtId:int, cityId: int) -> Street:
+        street = self.getByName(streetName, districtId, cityId)
+        if street:
+            return street
         street = Street(streetName, districtId, cityId)
         orm.session.add(street)
         orm.session.commit()
