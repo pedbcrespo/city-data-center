@@ -14,7 +14,7 @@ class DemandLocation:
         self.observation = observation
         self.createDate = datetime.now()
 
-    def json(self):
+    def json(self) -> dict:
         return {
             'demandId': self.demandId,
             'streetId': self.streetId,
@@ -22,7 +22,7 @@ class DemandLocation:
             'createDate': self.createDate.isoformat()
         }
     
-    def getRes(self, demand:Demand, street: Street, district: District, city: City, state: State, createDate=None):
+    def getRes(self, demand:Demand, street: Street, district: District, city: City, state: State, createDate=None) -> dict:
         return {
             'state': state.name,
             'city': city.name,

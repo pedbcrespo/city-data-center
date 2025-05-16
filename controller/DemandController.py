@@ -5,16 +5,7 @@ from model import DemandLocation, DemandReq
 
 
 demandService = DemandService()
-
-class DemandOld(Resource):
-    def get(self):
-        return jsonify(demandService.getAll())
-    
-    def post(self):
-        data = request.get_json()
-        demandLocation = DemandLocation(data['demandId'], data['streetId'], data['observation'], data['cep'])
-        return jsonify(demandService.save(demandLocation))
-    
+  
 class SingleDemand(Resource):
     def post(self):
         data = request.get_json()
