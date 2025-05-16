@@ -33,3 +33,21 @@ class DemandLocation:
             'observation': self.observation,
             'createDate': self.createDate.isoformat() if not createDate else createDate
         }
+    
+class DemandReq:
+    def __init__(self, data: dict):
+        self.uf = data['uf']
+        self.city = data['city']
+        self.district = data['district']
+        self.street = data['street']
+        self.demand = Demand(data['title'], data['description'])
+        self.observation = data['observation']
+        self.createDate = datetime.now()
+
+    def getAddress(self) -> dict[str, str]:
+        return {
+            'uf': self.uf,
+            'city': self.city,
+            'district': self.district,
+            'street': self.street
+        }

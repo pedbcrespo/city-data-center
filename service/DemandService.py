@@ -1,5 +1,5 @@
 from typing import List
-from model.DemandLocation import DemandLocation
+from model.DemandLocation import DemandLocation, DemandReq
 from model.Demand import Demand
 from model.Street import Street
 from model.District import District
@@ -28,13 +28,17 @@ class DemandService:
         condition = {"streetId": {"$in": streetIds}}
         return self.__get__(condition)
 
-    def save(self, demandLocation: DemandLocation) -> dict: 
+    def saveOld(self, demandLocation: DemandLocation) -> dict: 
         address = addressService.saveCep(demandLocation.cep)
-        demand = self.__getDemand__(demandLocation.demandId)
+        demand = self.__getDemandById__(demandLocation.demandId)
         if not demand:
             return None
         mongo.db.get_collection('demand_location').insert_one(demandLocation.json())
         return demandLocation.getRes(demand, address['street'], address['district'], address['city'], address['state'])
+
+    def save(self, demandReq: DemandReq):
+        address = addressService.saveAddressByObj(demandReq.getAddress())
+
 
     def saveDemand(self, title:str, description:str) -> Demand:
         demand = Demand.query.filter(and_(Demand.name == title, Demand.description == description)).first()
@@ -50,11 +54,14 @@ class DemandService:
             results = list(mongo.db.get_collection('demand_location').find())
         return [self.__setDemandLocation__(result) for result in results]
 
-    def __getDemand__(self, demandId: int) -> Demand:
+    def __getDemandByTitleAndDescription__(self, title:str, description:str) -> Demand:
+        return Demand.query.filter(and_(Demand.name == title, Demand.description == description)).first()
+
+    def __getDemandById__(self, demandId: int) -> Demand:
         return Demand.query.filter(Demand.id == demandId).first()
     
     def __setDemandLocation__(self, result: dict) -> dict:
-        demand = self.__getDemand__(int(result['demandId']))
+        demand = self.__getDemandById__(int(result['demandId']))
         address = addressService.getAddressByStreetId(int(result['streetId']))
         demandLocation = DemandLocation(result['demandId'], result['streetId'], result['observation'])
         return demandLocation.getRes(demand, address['street'], address['district'], address['city'], address['state'], result['createDate'])
