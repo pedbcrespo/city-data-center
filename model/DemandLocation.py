@@ -1,37 +1,33 @@
 from configuration.config import ormDatabase as orm
 from datetime import datetime
 from model.Demand import Demand
-from model.State import State
-from model.City import City
-from model.District import District
-from model.Street import Street
+from model.Address import Address
 
 class DemandLocation:
-    def __init__(self, demandId: int, streetId: int, observation: str, cep:str = None):
-        self.cep = cep.replace('-', '')
-        self.demandId = demandId
-        self.streetId = streetId
+    def __init__(self, demand: Demand, address: Address, observation: str, createDate:datetime = None):
+        self.demand = demand
+        self.address = address
         self.observation = observation
-        self.createDate = datetime.now()
+        self.createDate = datetime.now() if not createDate else createDate
 
     def json(self) -> dict:
         return {
-            'demandId': self.demandId,
-            'streetId': self.streetId,
+            'demandId': self.demand.id,
+            'streetId': self.address.street.id,
             'observation': self.observation,
             'createDate': self.createDate.isoformat()
         }
     
-    def getRes(self, demand:Demand, street: Street, district: District, city: City, state: State, createDate=None) -> dict:
+    def getRes(self) -> dict:
         return {
-            'state': state.name,
-            'city': city.name,
-            'district': district.name,
-            'street': street.name,
-            'demand': demand.name,
-            'description': demand.description,
+            'state': self.address.state.name,
+            'city': self.address.city.name,
+            'district': self.address.district.name,
+            'street': self.address.street.name,
+            'demand': self.demand.name,
+            'description': self.demand.description,
             'observation': self.observation,
-            'createDate': self.createDate.isoformat() if not createDate else createDate
+            'createDate': self.createDate.isoformat()
         }
     
 class DemandReq:
@@ -44,7 +40,7 @@ class DemandReq:
         self.observation = data['observation']
         self.createDate = datetime.now()
 
-    def getAddress(self) -> dict[str, str]:
+    def getDictAddress(self) -> dict[str, str]:
         return {
             'uf': self.uf,
             'city': self.city,

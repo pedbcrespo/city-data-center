@@ -6,7 +6,7 @@ from urllib.parse import unquote
 
 addressService = AddressService()
 
-class Address(Resource):
+class AddressCep(Resource):
     def get(self, cep):
         saved = addressService.saveCep(cep)
         return jsonify({'status': 'salvo com sucesso', 'data': saved.json()})
@@ -17,8 +17,7 @@ class AddressComplete(Resource):
         return jsonify(addressService.saveAddressByObj(data))
     
 class AddressName(Resource):
-    def get(self, uf, city, street):
-        # street = unquote(street)
+    def get(self, uf, city, street): 
         print(uf, city, street)
         addressList = addressService.saveAddress(street, city, uf)
-        return jsonify([addrs.json() for addrs in addressList])
+        return jsonify([addrs.json() for addrs in addressList]) 
