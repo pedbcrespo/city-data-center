@@ -13,7 +13,7 @@ class Initial(Resource):
 
 class RedirectToCities(Resource):
     def get(self):
-        return redirect(BASE_URL)
+        return redirect('/apidocs/')
 
 
 api.add_resource(RedirectToCities, "/")

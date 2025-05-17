@@ -5,6 +5,7 @@ from configuration import dev_configuration as db
 from flask_cors import CORS
 from flask_pymongo import PyMongo
 from flask_migrate import Migrate
+from flasgger import Swagger
 import os
 
 ENV = os.getenv('FLASK_ENV', None)
@@ -31,6 +32,7 @@ app = Flask(__name__, template_folder=TEMPLATE_FOLDER)
 CORS(app, origins='*')
 app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 app.config["MONGO_URI"] = MONGO_URI
+swagger = Swagger(app)
 
 
 ormDatabase = SQLAlchemy(app)
