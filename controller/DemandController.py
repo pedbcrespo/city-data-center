@@ -59,7 +59,7 @@ class Demand(Resource):
         ],
         'responses': {
             200: {
-                'description': 'Demanda criada com sucesso',
+                'description': 'Salva uma demanda de uma determinada localidade.',
                 'examples': {
                     'application/json': {
                         'state': 'RJ',
