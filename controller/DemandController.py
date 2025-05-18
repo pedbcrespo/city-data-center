@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask import request, jsonify
 from service import DemandService
-from model import DemandReq
+from model import DemandReq, Demand as ModelDemand
 from flasgger import swag_from
 
 demandService = DemandService()
@@ -9,7 +9,7 @@ demandService = DemandService()
 class SingleDemand(Resource):
     def post(self):
         data = request.get_json()
-        return jsonify(demandService.saveDemand(data['title'], data['description']))
+        return jsonify(demandService.saveDemand(ModelDemand(data['title'], data['description'])))
     
 class Demand(Resource):
     @swag_from({
