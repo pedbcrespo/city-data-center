@@ -26,3 +26,4 @@ class CityService:
         orm.session.add(city)
         orm.session.commit()
         return City.query.filter(and_(City.name == name, City.state_id == stateId)).first()
+

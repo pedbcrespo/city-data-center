@@ -1,16 +1,56 @@
 from flask_restful import Resource
-from flask import redirect, render_template, make_response
-from service import CityService, StateService, InfoService
+from flasgger import swag_from
+from service import CityService
 
 cityService = CityService()
-stateService = StateService()
-infoService = InfoService()
 
 class Cities(Resource):
+    @swag_from({
+        'responses': {
+            200: {
+                'description': 'Lista todas as cidades',
+                'examples': {
+                    'application/json': [
+                        {
+                            'id': 1,
+                            'name': 'Rio de Janeiro',
+                            'stateId': 1,
+                            'ibgeId': 1,
+                        }
+                    ]
+                }
+            }
+        }
+    })
     def get(self):
         return cityService.getCities()
 
 class City(Resource):
-    def get(self, city_id):
-        return cityService.getById(city_id)
+    @swag_from({
+        'parameters': [
+            {
+                'name': 'cityId',
+                'in': 'path',
+                'type': 'string',
+                'required': True,
+                'description': 'Identificador da cidade'
+            },
+        ],
+        'responses': {
+            200: {
+                'description': 'Busca informações mais detalhadas de determinada cidade',
+                'examples': {
+                    'application/json':
+                        {
+                            'id': 1,
+                            'name': 'Rio de Janeiro',
+                            'stateId': 1,
+                            'ibgeId': 1,
+                        }
+                }
+            }
+        }
+    })
+    def get(self, cityId):
+        return cityService.getById(cityId)
 

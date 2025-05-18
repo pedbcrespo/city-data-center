@@ -15,6 +15,6 @@ class City(orm.Model):
         return f"({self.id}, {self.name}, {self.state_id})"
     
     def json(self, State: State = None):
-        result = {'id': self.id, 'state_id':self.state_id, 'ibge_id': self.ibge_id}
+        result = {'id': self.id, 'stateId':self.state_id, 'ibgeId': self.ibge_id}
         result['name'] = f"{self.name} - {State.abbreviation}" if State else self.name
         return result

@@ -58,7 +58,7 @@ class AddressService:
         return addressList
 
     def __saveAddress__(self, address: dict) -> Address:
-        state = stateService.getState(address['uf'])
+        state = stateService.getStateByUf(address['uf'])
         city = cityService.save(address['city'], state.id)
         district = districtService.save(address['district'], city.id)
         street = streetService.save(address['street'], district.id, city.id)
