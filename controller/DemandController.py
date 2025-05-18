@@ -13,6 +13,7 @@ class SingleDemand(Resource):
     
 class Demand(Resource):
     @swag_from({
+        'tags': ['Demand'],
         'responses': {
             200: {
                 'description': 'Lista todas as demandas',
@@ -37,6 +38,7 @@ class Demand(Resource):
         return jsonify(demandService.getAll())
 
     @swag_from({
+        'tags': ['Demand'],
         'parameters': [
             {
                 'name': 'body',

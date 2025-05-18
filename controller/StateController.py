@@ -6,6 +6,7 @@ from flasgger import swag_from
 service = StateService()
 class States(Resource):
     @swag_from({
+        'tags': ['State'],
         'responses': {
             200: {
                 'description': 'Lista todas os Estados',
@@ -26,6 +27,7 @@ class States(Resource):
 
 class State(Resource):
     @swag_from({
+        'tags': ['State'],
         'parameters': [
             {
                 'name': 'uf',

@@ -6,6 +6,7 @@ cityService = CityService()
 
 class Cities(Resource):
     @swag_from({
+        'tags': ['City'],
         'responses': {
             200: {
                 'description': 'Lista todas as cidades',
@@ -27,6 +28,7 @@ class Cities(Resource):
 
 class City(Resource):
     @swag_from({
+        'tags': ['City'],
         'parameters': [
             {
                 'name': 'cityId',
