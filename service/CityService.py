@@ -10,9 +10,9 @@ class CityService:
         cities = City.query.all()
         return [city.json() for city in cities]
 
-    def getById(self, cityId:int) -> dict:
+    def getById(self, cityId:int) -> City:
         city = City.query.filter(City.id == cityId).first()
-        return city.json()
+        return city
     
     def getCity(self, uf:str, name:str) -> City:
         state = State.query.filter(State.abbreviation == uf).first()

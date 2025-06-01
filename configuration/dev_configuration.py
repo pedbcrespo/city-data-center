@@ -2,7 +2,7 @@ import os
 
 # MYSQL
 user='projetotcc'
-password='tcc2023'
+password='tcc#2023'
 host='localhost'
 database='tcc_project'
 

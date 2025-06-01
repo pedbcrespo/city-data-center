@@ -1,9 +1,7 @@
 # City Data Center
 ## Projeto de coleta e analise de dados das cidades do país
 Aqui encontramos um projeto open source que visa coletar informações das cidades ao redor do país, armazena-las, e gerar prospecções.
-*   O Objetivo é gerar uma trasnparencia mais clara a respeito dos problemas encontrados nas Cidades, possibilitando assim a tomada de decisões a fim de resolver
-*   O projeto consiste na reorganização de uma ideia original do TCC.
-*   Inicialmente tem-se como objetivo coletar os dados a partir do fornecimento voluntario de informações publicas a respeito das cidades.
+O Objetivo é gerar uma trasnparencia a respeito dos problemas encontrados nas Cidades, possibilitando assim a tomada de decisões
 
 ### As tecnologias utilizadas nesse projeto são:
 *   Python
@@ -12,21 +10,22 @@ Aqui encontramos um projeto open source que visa coletar informações das cidad
 *   Docker
 *   Docker compose
 
-Os dados são coletados de um google forms, tratados e enviados para o banco de dados.
-
 ## Rodando o codigo usando Docker
-### Para rodar o codigo na primeira vez:
+Obviamente precisa ter o Docker e o Docker Compose instalados!
+
+### Execute na primeira vez que rodar:
 ```bash
 docker compose up --build
 ```
 
-### Caso ja tenha feito o build
+### Após a primeira vez, para subir tudo rode:
 ```bash
 docker compose up
 ```
 
 ## Para rodar o projeto sem ser pelo Docker
-*   Primeiro crie um ambiente virtual
+### NECESSARIO TER O MYSQL E O MONGO INSTALADO (RECOMENDO TAMBEM A INSTALAÇÃO DO MONGO COMPASS)
+*   Caso abra em uma IDE que nao crie um ambiente virtual (VS Code)
 ```bash
 python -m venv venv
 ```
@@ -42,15 +41,9 @@ python -m venv venv
 ```bash
 pip install -r requirements.txt
 ```
-*   Após a instalação, ative o MySQL que DEVE estar instalado no computador assim como o MongoDB e importe a base de dados
-*   É provavale que seja necessario executar tambem esses comandos:
-(Windows - Powershell):
+*   Para rodar o projeto, antes deve iniciar o MySQL assim como o Mongo. No Windows basta abrir o Workbench e entrar em algum servidor. No Linux ou Max, abra o terminal e digite (esse processo tambem funciona no Windows, caso tenha configurado as variaveis de ambiente):
 ```bash
-$env:FLASK_APP = "main.py"
-``` 
-(Linux/MacOs):
-```bash
-export FLASK_APP=main.py
+mysql -u seu_nome_de_usuario -p
 ``` 
 Em seguida execute:
 ```bash
@@ -58,11 +51,10 @@ flask db init
 ```
 Por fim:
 ```bash
-flask db migrate -m "Criação das tabelas"
+flask db migrate -m "Init"
 ```
-
 *   Após isso, rode o projeto
-* IMPORTANTE: antes de Executar, crie uma conexao nova com os dados no dev_configuration.py **ISSO É TEMPORARIO E TEM QUE SER TRATADO**
+* IMPORTANTE: antes de Executar, crie uma conexao nova com os dados no dev_configuration.py, ou entao altere os dados para permitir a conexão local **ISSO É TEMPORARIO E TEM QUE SER TRATADO**
 ```bash
-python main.py
+flask run
 ```

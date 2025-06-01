@@ -54,5 +54,6 @@ class City(Resource):
         }
     })
     def get(self, cityId):
-        return cityService.getById(cityId)
+        city = cityService.getById(cityId)
+        return city.json()
 

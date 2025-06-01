@@ -8,6 +8,11 @@ class DemandLocation:
         self.demand = demand
         self.address = address
         self.observation = observation
+        if isinstance(createDate, str):
+            try:
+                createDate = datetime.strptime(createDate, "%Y-%m-%dT%H:%M:%S.%f")
+            except ValueError:
+                createDate = datetime.strptime(createDate, "%Y-%m-%dT%H:%M:%S")
         self.createDate = datetime.now() if not createDate else createDate
 
     def json(self) -> dict:
