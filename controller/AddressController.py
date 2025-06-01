@@ -35,7 +35,7 @@ class AddressCep(Resource):
             }
         }
     })
-    def get(self, cep):
+    def post(self, cep):
         saved = addressService.saveCep(cep)
         return jsonify({'status': 'salvo com sucesso', 'data': saved.json()})
 
@@ -125,7 +125,7 @@ class AddressName(Resource):
             }
         }
     })
-    def get(self, uf, city, street): 
+    def post(self, uf, city, street): 
         print(uf, city, street)
         addressList = addressService.saveAddress(street, city, uf)
         return jsonify([addrs.json() for addrs in addressList]) 

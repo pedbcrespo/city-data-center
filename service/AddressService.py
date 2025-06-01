@@ -35,9 +35,9 @@ class AddressService:
         street = streetService.getById(streetId)
         if not street:
             return None
-        district = districtService.getById(street.districtId)
-        city = cityService.getById(district.cityId)
-        state = stateService.getById(city.stateId)
+        district = districtService.getById(street.district_id)
+        city = cityService.getById(district.city_id)
+        state = stateService.getById(city.state_id)
         address = Address(street, district, city, state)
         return address
 
