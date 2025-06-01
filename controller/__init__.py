@@ -19,7 +19,7 @@ class RedirectToCities(Resource):
 api.add_resource(RedirectToCities, "/")
 api.add_resource(Initial, BASE_URL)
 api.add_resource(Cities, f"{BASE_URL}/cities")
-api.add_resource(City, f"{BASE_URL}/city/info/<int:city_id>")
+api.add_resource(City, f"{BASE_URL}/city/info/<int:cityId>")
 api.add_resource(States, f"{BASE_URL}/states")
 api.add_resource(State, f"{BASE_URL}/state/<uf>")
 api.add_resource(Demand, f"{BASE_URL}/demand/")
