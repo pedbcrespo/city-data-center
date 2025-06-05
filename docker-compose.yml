@@ -10,7 +10,7 @@ services:
       - DB_HOST=db
       - DB_NAME=tcc_project
       - DB_USER=projeto
-      - DB_PASS Projeto-123
+      - DB_PASS=Projeto-123
       - MONGO_HOST=mongo
       - MONGO_PORT=27017
       - MONGO_DB=city_database
@@ -31,7 +31,7 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./tcc-base-dados.sql:/docker-entrypoint-initdb.d/base-dados.sql
+      - ./base-dados.sql:/docker-entrypoint-initdb.d/base-dados.sql
     restart: always
 
   mongo:
