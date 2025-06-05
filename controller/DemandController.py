@@ -27,6 +27,7 @@ class Demand(Resource):
                             'demand': 'Iluminação',
                             'description': 'Poste apagado',
                             'observation': 'Em frente ao número 123',
+                            'location': {'x': -43.182365, 'y': -22.971964},
                             'createDate': '2025-05-17T17:48:30'
                         }
                     ]
@@ -53,9 +54,10 @@ class Demand(Resource):
                         'street': {'type': 'string'},
                         'title': {'type': 'string'},
                         'description': {'type': 'string'},
+                        'location': {'type': 'object'},
                         'observation': {'type': 'string'},
                     },
-                    'required': ['uf', 'city', 'district', 'street', 'title', 'description']
+                    'required': ['uf', 'city', 'district', 'street', 'title', 'description', 'location']
                 }
             }
         ],
@@ -71,6 +73,7 @@ class Demand(Resource):
                         'demand': 'Iluminação',
                         'description': 'Poste apagado',
                         'observation': 'Em frente ao número 123',
+                        'location': {'x': -43.182365, 'y': -22.971964},
                         'createDate': '2025-05-17T17:48:30'
                     }
                 }

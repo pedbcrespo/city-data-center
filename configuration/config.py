@@ -24,6 +24,7 @@ MONGO_PORT = os.getenv("MONGO_PORT", "27017")
 MONGO_DB = os.getenv("MONGO_DB", "city_database")
 
 MONGO_URI = f"mongodb://{MONGO_HOST}:{MONGO_PORT}/{MONGO_DB}"
+DEMAND_BY_ADDRESS_COLLECTION = 'demands_by_address'
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 TEMPLATE_FOLDER = os.path.join(BASE_DIR, 'templates')
