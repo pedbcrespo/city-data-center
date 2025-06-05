@@ -3,11 +3,13 @@ from datetime import datetime
 from model.Demand import Demand
 from model.Address import Address
 
-class DemandLocation:
-    def __init__(self, demand: Demand, address: Address, observation: str, createDate:datetime = None):
+class DemandByAddress:
+    def __init__(self, demand: Demand, address: Address, observation: str, createDate:datetime = None, location:dict = {}):
         self.demand = demand
         self.address = address
         self.observation = observation
+        self.location = location
+
         if isinstance(createDate, str):
             try:
                 createDate = datetime.strptime(createDate, "%Y-%m-%dT%H:%M:%S.%f")
@@ -20,6 +22,7 @@ class DemandLocation:
             'demandId': self.demand.id,
             'streetId': self.address.street.id,
             'observation': self.observation,
+            'location': self.location,
             'createDate': self.createDate.isoformat()
         }
     
@@ -32,9 +35,11 @@ class DemandLocation:
             'demand': self.demand.name,
             'description': self.demand.description,
             'observation': self.observation,
+            'location': self.location,
             'createDate': self.createDate.isoformat()
         }
-    
+
+
 class DemandReq:
     def __init__(self, data: dict):
         self.uf = data['uf']
@@ -43,6 +48,7 @@ class DemandReq:
         self.street = data['street']
         self.demand = Demand(data['title'], data['description'])
         self.observation = data['observation']
+        self.location = data['location'] if 'location' in data else {}
         self.createDate = datetime.now()
 
     def getDictAddress(self) -> dict[str, str]:
@@ -50,5 +56,6 @@ class DemandReq:
             'uf': self.uf,
             'city': self.city,
             'district': self.district,
-            'street': self.street
+            'street': self.street,
+            'location': self.location
         }

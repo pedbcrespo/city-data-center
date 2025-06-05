@@ -10,4 +10,3 @@ database='tcc_project'
 mongoHost = 'localhost'
 mongoPort = '27017'
 mongoDB = 'city_database'
-
