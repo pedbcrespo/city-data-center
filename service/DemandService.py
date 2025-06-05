@@ -1,20 +1,20 @@
 from typing import List
-from model.DemandLocation import DemandLocation, DemandReq
+from model.DemandByAddress import DemandByAddress, DemandReq
 from model.Demand import Demand
 from sqlalchemy import and_
 from configuration.config import mongo, ormDatabase as orm
 from service.StreetService import StreetService
 from service.DistrictService import DistrictService
 from service.AddressService import AddressService
-
+from configuration.config import DEMAND_BY_ADDRESS_COLLECTION
 streetService = StreetService()
 districtService = DistrictService()
 addressService = AddressService()
 
 class DemandService:
     def getAll(self) -> List[dict]:
-        demandLocationList = self.__getAll__()
-        return demandLocationList
+        demandByAddressList = self.__getAll__()
+        return demandByAddressList
     
     def getByCity(self, cityId:int) -> List[dict]:
         streets = streetService.getByCityId(int(cityId))
@@ -25,9 +25,9 @@ class DemandService:
     def save(self, demandReq: DemandReq) -> dict:
         address = addressService.saveAddressByObj(demandReq.getDictAddress())
         demand = self.saveDemand(demandReq.demand)
-        demandLocation = DemandLocation(demand, address, demandReq.observation, demandReq.createDate)
-        mongo.db.get_collection('demand_location').insert_one(demandLocation.json())
-        return demandLocation.getRes()
+        demandByAddress = DemandByAddress(demand, address, demandReq.observation, demandReq.createDate)
+        mongo.db.get_collection(DEMAND_BY_ADDRESS_COLLECTION).insert_one(demandByAddress.json())
+        return demandByAddress.getRes()
 
     def saveDemand(self, demand: Demand) -> Demand:
         existedDemand = Demand.query.filter(and_(Demand.name == demand.name, Demand.description == demand.description)).first()
@@ -38,8 +38,8 @@ class DemandService:
         return Demand.query.filter(and_(Demand.name == demand.name, Demand.description == demand.description)).first()
     
     def __getAll__(self, condition:dict={}) -> List[dict]:
-        results = list(mongo.db.get_collection('demand_location').find(condition))
-        return [self.__setDemandLocation__(result) for result in results]
+        results = list(mongo.db.get_collection(DEMAND_BY_ADDRESS_COLLECTION).find(condition))
+        return [self.__setDemandByAddress__(result) for result in results]
 
     def __getDemandByTitleAndDescription__(self, title:str, description:str) -> Demand:
         return Demand.query.filter(and_(Demand.name == title, Demand.description == description)).first()
@@ -47,8 +47,8 @@ class DemandService:
     def __getDemandById__(self, demandId: int) -> Demand:
         return Demand.query.filter(Demand.id == demandId).first()
     
-    def __setDemandLocation__(self, result: dict) -> dict:
+    def __setDemandByAddress__(self, result: dict) -> dict:
         demand = self.__getDemandById__(int(result['demandId']))
         address = addressService.getAddressByStreetId(int(result['streetId']))
-        demandLocation = DemandLocation(demand, address, result['observation'], result['createDate'])
-        return demandLocation.getRes()
+        demandByAddress = DemandByAddress(demand, address, result['observation'], result['createDate'])
+        return demandByAddress.getRes()
