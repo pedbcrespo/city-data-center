@@ -9,8 +9,8 @@ services:
       - FLASK_ENV=development
       - DB_HOST=db
       - DB_NAME=tcc_project
-      - DB_USER=projetotcc
-      - DB_PASS=tcc2023
+      - DB_USER=projeto
+      - DB_PASS Projeto-123
       - MONGO_HOST=mongo
       - MONGO_PORT=27017
       - MONGO_DB=city_database
@@ -23,10 +23,10 @@ services:
     image: mysql:8.0
     container_name: mysql_db
     environment:
-      MYSQL_ROOT_PASSWORD: tcc2023
+      MYSQL_ROOT_PASSWORD: Projeto-123
       MYSQL_DATABASE: tcc_project
-      MYSQL_USER: projetotcc
-      MYSQL_PASSWORD: tcc2023
+      MYSQL_USER: projeto
+      MYSQL_PASSWORD: Projeto-123
     ports:
       - "3306:3306"
     volumes:
