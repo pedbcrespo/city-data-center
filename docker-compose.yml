@@ -23,7 +23,7 @@ services:
     image: mysql:8.0
     container_name: mysql_db
     environment:
-      MYSQL_ROOT_PASSWORD: Projeto-123
+      MYSQL_ROOT_PASSWORD: root123
       MYSQL_DATABASE: tcc_project
       MYSQL_USER: projeto
       MYSQL_PASSWORD: Projeto-123
