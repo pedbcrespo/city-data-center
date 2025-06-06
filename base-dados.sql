@@ -16,47 +16,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `alembic_version`
---
-
-DROP TABLE IF EXISTS `alembic_version`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `alembic_version` (
-  `version_num` varchar(32) NOT NULL,
-  PRIMARY KEY (`version_num`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `alembic_version`
---
-
-LOCK TABLES `alembic_version` WRITE;
-/*!40000 ALTER TABLE `alembic_version` DISABLE KEYS */;
-INSERT INTO `alembic_version` VALUES ('9e6e0c7cd8b7');
-/*!40000 ALTER TABLE `alembic_version` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `city`
---
-
-DROP TABLE IF EXISTS `city`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `city` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `name` varchar(200) DEFAULT NULL,
-  `state_id` bigint DEFAULT NULL,
-  `ibge_id` int DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `state_id` (`state_id`),
-  CONSTRAINT `city_ibfk_1` FOREIGN KEY (`state_id`) REFERENCES `state` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11644 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Dumping data for table `city`
 --
 
@@ -67,22 +26,6 @@ INSERT INTO `city` VALUES (6074,'Alta Floresta D\'Oeste',109,1100015),(6075,'Ari
 UNLOCK TABLES;
 
 --
--- Table structure for table `demand`
---
-
-DROP TABLE IF EXISTS `demand`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `demand` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(200) DEFAULT NULL,
-  `description` varchar(500) DEFAULT NULL,
-  `creationDate` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Dumping data for table `demand`
 --
 
@@ -90,23 +33,6 @@ LOCK TABLES `demand` WRITE;
 /*!40000 ALTER TABLE `demand` DISABLE KEYS */;
 /*!40000 ALTER TABLE `demand` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Table structure for table `district`
---
-
-DROP TABLE IF EXISTS `district`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `district` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `name` varchar(200) DEFAULT NULL,
-  `city_id` bigint DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `city_id` (`city_id`),
-  CONSTRAINT `district_ibfk_1` FOREIGN KEY (`city_id`) REFERENCES `city` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=41098 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `district`
@@ -120,20 +46,6 @@ INSERT INTO `district` VALUES (32586,'Jardim União da Vitória',10176),(32587,'
 UNLOCK TABLES;
 
 --
--- Table structure for table `region`
---
-
-DROP TABLE IF EXISTS `region`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `region` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Dumping data for table `region`
 --
 
@@ -144,25 +56,6 @@ INSERT INTO `region` VALUES (1,'Norte'),(2,'Nordeste'),(3,'Sudeste'),(4,'Sul'),(
 UNLOCK TABLES;
 
 --
--- Table structure for table `state`
---
-
-DROP TABLE IF EXISTS `state`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `state` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) DEFAULT NULL,
-  `abbreviation` varchar(2) DEFAULT NULL,
-  `ibge_id` int DEFAULT NULL,
-  `region_id` int DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_stateregion_region` (`region_id`),
-  CONSTRAINT `fk_stateregion_region` FOREIGN KEY (`region_id`) REFERENCES `region` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=136 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Dumping data for table `state`
 --
 
@@ -171,26 +64,6 @@ LOCK TABLES `state` WRITE;
 INSERT INTO `state` VALUES (109,'Rondônia','RO',11,1),(110,'Acre','AC',12,1),(111,'Amazonas','AM',13,1),(112,'Roraima','RR',14,1),(113,'Pará','PA',15,1),(114,'Amapá','AP',16,1),(115,'Tocantins','TO',17,1),(116,'Maranhão','MA',21,2),(117,'Piauí','PI',22,2),(118,'Ceará','CE',23,2),(119,'Rio Grande do Norte','RN',24,2),(120,'Paraíba','PB',25,2),(121,'Pernambuco','PE',26,2),(122,'Alagoas','AL',27,2),(123,'Sergipe','SE',28,2),(124,'Bahia','BA',29,2),(125,'Minas Gerais','MG',31,3),(126,'Espírito Santo','ES',32,3),(127,'Rio de Janeiro','RJ',33,3),(128,'São Paulo','SP',35,3),(129,'Paraná','PR',41,4),(130,'Santa Catarina','SC',42,4),(131,'Rio Grande do Sul','RS',43,4),(132,'Mato Grosso do Sul','MS',50,5),(133,'Mato Grosso','MT',51,5),(134,'Goiás','GO',52,5),(135,'Distrito Federal','DF',53,5);
 /*!40000 ALTER TABLE `state` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Table structure for table `street`
---
-
-DROP TABLE IF EXISTS `street`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `street` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `name` varchar(200) DEFAULT NULL,
-  `district_id` bigint DEFAULT NULL,
-  `city_id` bigint DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `district_id` (`district_id`),
-  KEY `city_id` (`city_id`),
-  CONSTRAINT `street_ibfk_1` FOREIGN KEY (`district_id`) REFERENCES `district` (`id`),
-  CONSTRAINT `street_ibfk_2` FOREIGN KEY (`city_id`) REFERENCES `city` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `street`
@@ -211,4 +84,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-05 18:17:53
+-- Dump completed on 2025-06-05 22:42:57
