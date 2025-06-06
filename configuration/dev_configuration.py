@@ -1,8 +1,8 @@
 import os
 
 # MYSQL
-user='projetotcc'
-password='tcc#2023'
+user='projeto'
+password='Projeto-123'
 host='localhost'
 database='tcc_project'
 
