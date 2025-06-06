@@ -15,6 +15,11 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+CREATE USER IF NOT EXISTS 'projeto'@'%' IDENTIFIED BY 'Projeto-123';
+GRANT ALL PRIVILEGES ON tcc_project.* TO 'projeto'@'%';
+FLUSH PRIVILEGES;
+
+
 --
 -- Table structure for table `city`
 --
