@@ -25,7 +25,7 @@ class DemandService:
     def save(self, demandReq: DemandReq) -> dict:
         address = addressService.saveAddressByObj(demandReq.getDictAddress())
         demand = self.saveDemand(demandReq.demand)
-        demandByAddress = DemandByAddress(demand, address, demandReq.observation, demandReq.createDate)
+        demandByAddress = DemandByAddress(demand, address, demandReq.observation, demandReq.createDate, demandReq.location)
         mongo.db.get_collection(DEMAND_BY_ADDRESS_COLLECTION).insert_one(demandByAddress.json())
         return demandByAddress.getRes()
 
